@@ -1,0 +1,131 @@
+-- ⚡ Brutal Teleport Multi-Point by Ganesha Exploit ⚡
+-- ✅ Brutal CFrame (instan + anti mantul)
+-- ✅ Delay 0.3s antar checkpoint
+-- ✅ UI Modern ON/OFF + Hotkey [T]
+-- ✅ Auto lanjut checkpoint terakhir saat respawn
+-- ✅ Auto reset 3s setelah checkpoint terakhir (loop ulang)
+-- ✅ UI OFF = script otomatis berhenti
+-- ✅ Notifikasi asli Roblox (Auto Summit by Ganesha Exploit)
+
+--=== Services ===--
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+--=== Checkpoints (CFrame) ===--
+local checkpoints = {
+    CFrame.new(-810.10,124.85,-667.08),
+    CFrame.new(768.41,288.92,-540.12),
+    CFrame.new(788.60,520.10,-376.45),
+    CFrame.new(-75.41,476.70,383.77),
+    CFrame.new(185.40,584.50,719.05),
+    CFrame.new(343.31,588.50,819.65),
+    CFrame.new(832.12,820.54,566.95),
+    CFrame.new(918.55,1002.51,594.38),
+}
+
+--=== Settings ===--
+local teleporting = false
+local delayTime = 0.3 -- ⏱️ delay antar checkpoint
+local lastCheckpoint = 1
+
+--=== Notifikasi Roblox ===--
+local function Notify(msg)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "⚡ Auto Summit by Ganesha Exploit",
+            Text = msg,
+            Duration = 3
+        })
+    end)
+end
+
+--=== Loop Teleport Brutal ===--
+local function teleportLoop()
+    while teleporting do
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        local hum = char:WaitForChild("Humanoid")
+
+        for i = lastCheckpoint, #checkpoints do
+            if not teleporting then break end
+            hrp.CFrame = checkpoints[i]
+            lastCheckpoint = i
+            if i < #checkpoints then
+                task.wait(delayTime)
+            end
+        end
+
+        -- selesai semua checkpoint
+        if teleporting and lastCheckpoint == #checkpoints then
+            Notify("Auto Reset dalam 3s...")
+            task.wait(3)
+            if teleporting then
+                hum.Health = 0 -- reset natural
+                lastCheckpoint = 1
+                break
+            end
+        end
+    end
+end
+
+--=== Auto lanjut saat respawn ===--
+player.CharacterAdded:Connect(function()
+    task.wait(1)
+    if teleporting then
+        teleportLoop()
+    end
+end)
+
+--=== UI Modern ===--
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0,200,0,80)
+Frame.Position = UDim2.new(0.05,0,0.2,0)
+Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Frame.BackgroundTransparency = 0.2
+Frame.BorderSizePixel = 0
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,12)
+
+local ToggleBtn = Instance.new("TextButton", Frame)
+ToggleBtn.Size = UDim2.new(0,180,0,40)
+ToggleBtn.Position = UDim2.new(0,10,0,20)
+ToggleBtn.Text = "🔴 Teleport [OFF]"
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+ToggleBtn.TextColor3 = Color3.fromRGB(255,255,255)
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextSize = 14
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0,10)
+
+--=== Toggle Function ===--
+ToggleBtn.MouseButton1Click:Connect(function()
+    if not teleporting then
+        teleporting = true
+        ToggleBtn.Text = "🟢 Teleport [ON]"
+        Notify("Teleport Dimulai")
+        task.spawn(teleportLoop)
+    else
+        teleporting = false
+        ToggleBtn.Text = "🔴 Teleport [OFF]"
+        Notify("Teleport Berhenti")
+    end
+end)
+
+--=== Hotkey [T] ===--
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.T then
+        ToggleBtn:MouseButton1Click()
+    end
+end)
+
+--=== Stop Teleport kalau UI dihapus ===--
+ScreenGui:GetPropertyChangedSignal("Parent"):Connect(function()
+    if not ScreenGui.Parent then
+        teleporting = false
+        Notify("UI dimatikan, teleport berhenti.")
+    end
+end)
+
+Notify("✅ Script Loaded! Tekan tombol [T] untuk toggle.")
