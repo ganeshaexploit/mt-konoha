@@ -3,7 +3,7 @@
 -- ✅ Delay 0.3s antar checkpoint
 -- ✅ UI Modern ON/OFF + Hotkey [T]
 -- ✅ Auto lanjut checkpoint terakhir saat respawn
--- ✅ Auto reset 3s setelah checkpoint terakhir (loop ulang)
+-- ✅ Auto reset 1s setelah checkpoint terakhir (loop ulang)
 -- ✅ UI OFF = script otomatis berhenti
 -- ✅ Notifikasi asli Roblox (Auto Summit by Ganesha Exploit)
 
@@ -59,8 +59,8 @@ local function teleportLoop()
 
         -- selesai semua checkpoint
         if teleporting and lastCheckpoint == #checkpoints then
-            Notify("Auto Reset dalam 3s...")
-            task.wait(3)
+            Notify("Auto Reset dalam 1s...")
+            task.wait(1)
             if teleporting then
                 hum.Health = 0 -- reset natural
                 lastCheckpoint = 1
