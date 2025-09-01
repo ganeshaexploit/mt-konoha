@@ -1,6 +1,6 @@
 -- ⚡ Brutal Teleport Multi-Point by Ganesha Exploit ⚡
 -- ✅ Brutal CFrame (instan + anti mantul)
--- ✅ Delay 2s antar checkpoint
+-- ✅ Delay 60s antar checkpoint
 -- ✅ UI Modern ON/OFF + Hotkey [T]
 -- ✅ Auto lanjut checkpoint terakhir saat respawn
 -- ✅ Auto reset 1s setelah checkpoint terakhir (loop ulang)
@@ -15,18 +15,18 @@ local player = Players.LocalPlayer
 
 --=== Checkpoints (CFrame) ===--
 local checkpoints = {
-    CFrame.new(825.69,285.00,-579.64),
-    CFrame.new(771.34,516.98,-380.48),
-    CFrame.new(-77.75,473.00,387.07),
-    CFrame.new(179.59,581.00,700.36),
-    CFrame.new(350.13,584.65,819.99),
-    CFrame.new(793.63,809.00,625.10),
-    CFrame.new(916.21,998.59,594.85),
+    CFrame.new(813.32,285.00,-576.73),
+    CFrame.new(770.99,516.98,-379.52),
+    CFrame.new(-79.29,473.00,386.61),
+    CFrame.new(179.59,581.00,701.10),
+    CFrame.new(348.56,584.72,820.30),
+    CFrame.new(793.17,809.00,625.78),
+    CFrame.new(915.12,997.73,584.24),
 }
 
 --=== Settings ===--
 local teleporting = false
-local delayTime = 2 -- ⏱️ delay antar checkpoint
+local delayTime = 60 -- ⏱️ delay antar checkpoint (60 detik)
 local lastCheckpoint = 1
 
 --=== Notifikasi Roblox ===--
