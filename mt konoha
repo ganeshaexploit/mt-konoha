@@ -1,16 +1,13 @@
 -- ⚡ Brutal Teleport Multi-Point by Ganesha Exploit ⚡
 -- ✅ Brutal CFrame (instan + anti mantul)
 -- ✅ Delay 60s antar checkpoint
--- ✅ UI Modern ON/OFF + Hotkey [T]
 -- ✅ Auto lanjut checkpoint terakhir saat respawn
 -- ✅ Auto reset 1s setelah checkpoint terakhir (loop ulang)
--- ✅ UI OFF = script otomatis berhenti
 -- ✅ Notifikasi asli Roblox (Auto Summit by Ganesha Exploit)
 
 --=== Services ===--
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
-local UIS = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
 --=== Checkpoints (CFrame) ===--
@@ -25,7 +22,6 @@ local checkpoints = {
 }
 
 --=== Settings ===--
-local teleporting = false
 local delayTime = 60 -- ⏱️ delay antar checkpoint (60 detik)
 local lastCheckpoint = 1
 
@@ -42,13 +38,12 @@ end
 
 --=== Loop Teleport Brutal ===--
 local function teleportLoop()
-    while teleporting do
+    while true do
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
         local hum = char:WaitForChild("Humanoid")
 
         for i = lastCheckpoint, #checkpoints do
-            if not teleporting then break end
             hrp.CFrame = checkpoints[i]
             lastCheckpoint = i
             if i < #checkpoints then
@@ -57,14 +52,11 @@ local function teleportLoop()
         end
 
         -- selesai semua checkpoint
-        if teleporting and lastCheckpoint == #checkpoints then
+        if lastCheckpoint == #checkpoints then
             Notify("Auto Reset dalam 1s...")
             task.wait(1)
-            if teleporting then
-                hum.Health = 0 -- reset natural
-                lastCheckpoint = 1
-                break
-            end
+            hum.Health = 0 -- reset natural
+            lastCheckpoint = 1
         end
     end
 end
@@ -72,59 +64,9 @@ end
 --=== Auto lanjut saat respawn ===--
 player.CharacterAdded:Connect(function()
     task.wait(1)
-    if teleporting then
-        teleportLoop()
-    end
+    teleportLoop()
 end)
 
---=== UI Modern ===--
-local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
-local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0,200,0,80)
-Frame.Position = UDim2.new(0.05,0,0.2,0)
-Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-Frame.BackgroundTransparency = 0.2
-Frame.BorderSizePixel = 0
-Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,12)
-
-local ToggleBtn = Instance.new("TextButton", Frame)
-ToggleBtn.Size = UDim2.new(0,180,0,40)
-ToggleBtn.Position = UDim2.new(0,10,0,20)
-ToggleBtn.Text = "🔴 Teleport [OFF]"
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
-ToggleBtn.TextColor3 = Color3.fromRGB(255,255,255)
-ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 14
-Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0,10)
-
---=== Toggle Function ===--
-ToggleBtn.MouseButton1Click:Connect(function()
-    if not teleporting then
-        teleporting = true
-        ToggleBtn.Text = "🟢 Teleport [ON]"
-        Notify("Teleport Dimulai")
-        task.spawn(teleportLoop)
-    else
-        teleporting = false
-        ToggleBtn.Text = "🔴 Teleport [OFF]"
-        Notify("Teleport Berhenti")
-    end
-end)
-
---=== Hotkey [T] ===--
-UIS.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.T then
-        ToggleBtn:MouseButton1Click()
-    end
-end)
-
---=== Stop Teleport kalau UI dihapus ===--
-ScreenGui:GetPropertyChangedSignal("Parent"):Connect(function()
-    if not ScreenGui.Parent then
-        teleporting = false
-        Notify("UI dimatikan, teleport berhenti.")
-    end
-end)
-
-Notify("✅ Script Loaded! Tekan tombol [T] untuk toggle.")
+--=== Start langsung ===--
+Notify("✅ Script Loaded! Teleport otomatis berjalan.")
+task.spawn(teleportLoop)
