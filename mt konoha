@@ -1,14 +1,16 @@
 -- ⚡ Brutal Teleport Multi-Point by Ganesha Exploit ⚡
 -- ✅ Brutal CFrame (instan + anti mantul)
--- ✅ Delay 60s antar checkpoint
+-- ✅ Delay antar checkpoint
 -- ✅ Auto lanjut checkpoint terakhir saat respawn
 -- ✅ Auto reset 1s setelah checkpoint terakhir (loop ulang)
--- ✅ Notifikasi asli Roblox (Auto Summit by Ganesha Exploit)
+-- ✅ Toggle ON/OFF dengan UI modern
+-- ✅ UI tidak hilang saat respawn
 
 --=== Services ===--
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local player = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 
 --=== Checkpoints (CFrame) ===--
 local checkpoints = {
@@ -22,8 +24,9 @@ local checkpoints = {
 }
 
 --=== Settings ===--
-local delayTime = 60 -- ⏱️ delay antar checkpoint (60 detik)
+local delayTime = 60 -- detik
 local lastCheckpoint = 1
+local teleportEnabled = false -- toggle ON/OFF
 
 --=== Notifikasi Roblox ===--
 local function Notify(msg)
@@ -36,14 +39,15 @@ local function Notify(msg)
     end)
 end
 
---=== Loop Teleport Brutal ===--
+--=== Teleport Loop ===--
 local function teleportLoop()
-    while true do
+    while teleportEnabled do
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
         local hum = char:WaitForChild("Humanoid")
 
         for i = lastCheckpoint, #checkpoints do
+            if not teleportEnabled then return end -- stop jika toggle off
             hrp.CFrame = checkpoints[i]
             lastCheckpoint = i
             if i < #checkpoints then
@@ -61,12 +65,45 @@ local function teleportLoop()
     end
 end
 
+--=== UI Modern Sederhana ===--
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoSummitUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,100)
+frame.Position = UDim2.new(0,10,0,10)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(1, -20, 0, 50)
+toggleButton.Position = UDim2.new(0,10,0,10)
+toggleButton.BackgroundColor3 = Color3.fromRGB(50,50,50)
+toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
+toggleButton.Text = "Teleport OFF"
+toggleButton.Parent = frame
+
+toggleButton.MouseButton1Click:Connect(function()
+    teleportEnabled = not teleportEnabled
+    toggleButton.Text = teleportEnabled and "Teleport ON" or "Teleport OFF"
+    if teleportEnabled then
+        Notify("✅ Teleport Dimulai!")
+        task.spawn(teleportLoop)
+    else
+        Notify("❌ Teleport Dihentikan!")
+    end
+end)
+
 --=== Auto lanjut saat respawn ===--
 player.CharacterAdded:Connect(function()
     task.wait(1)
-    teleportLoop()
+    if teleportEnabled then
+        task.spawn(teleportLoop)
+    end
 end)
 
---=== Start langsung ===--
-Notify("✅ Script Loaded! Teleport otomatis berjalan.")
-task.spawn(teleportLoop)
+--=== Script Loaded ===--
+Notify("✅ Script Loaded! Gunakan UI untuk toggle Teleport.")
